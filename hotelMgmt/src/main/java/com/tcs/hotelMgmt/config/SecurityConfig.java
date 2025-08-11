@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -49,7 +50,9 @@ public class SecurityConfig {
 	 {
 		 //It internally implements AuthenticationProvider
 		 DaoAuthenticationProvider provider=new  DaoAuthenticationProvider();
-		 provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+		 //for sending Password normal but it will store in data base in encripted form 
+		provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+		// provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 		 provider.setUserDetailsService(userDetailsService);
 		 return provider;
 	 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tcs.hotelMgmt.entity.UserEntity;
@@ -14,6 +15,8 @@ import com.tcs.hotelMgmt.repo.UserRepo;
 public class UserService implements UserDetailsService{
   @Autowired
   UserRepo userRepo;
+  
+  BCryptPasswordEncoder encoder=new BCryptPasswordEncoder(12);
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// TODO Auto-generated method stub
@@ -21,5 +24,12 @@ public class UserService implements UserDetailsService{
 		//kyonki UserPrinciple Internally implements UserDetails(UserDetails is a interface)
 		return new UserPrinciple(user);
 	}
-  
+	
+   public UserEntity saveUser(UserEntity user)
+   {
+	   //it will store in data base in encripted form 
+	   user.setPassword(encoder.encode(user.getPassword()));	   
+	   userRepo.save(user);
+	   return user;
+   }
 }
