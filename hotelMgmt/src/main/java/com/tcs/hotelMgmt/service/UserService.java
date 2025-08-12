@@ -1,6 +1,10 @@
 package com.tcs.hotelMgmt.service;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +20,13 @@ public class UserService implements UserDetailsService{
   @Autowired
   UserRepo userRepo;
   
+  @Autowired
+  JWTService jwtService;
+  
+   @Autowired
+   @Lazy
+  AuthenticationManager authManager;
+  
   BCryptPasswordEncoder encoder=new BCryptPasswordEncoder(12);
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -28,8 +39,24 @@ public class UserService implements UserDetailsService{
    public UserEntity saveUser(UserEntity user)
    {
 	   //it will store in data base in encripted form 
-	   user.setPassword(encoder.encode(user.getPassword()));	   
+	   
+	   user.setPassword(encoder.encode(user.getPassword()));
+	   
 	   userRepo.save(user);
 	   return user;
    }
+
+    public String variefy(UserEntity user) {
+    	System.out.println("userName = "+user.getUsername()+" Password = "+user.getPassword());
+    	Authentication authentication= authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+    	System.out.println("after get password");
+    	if(authentication.isAuthenticated()==true)
+    	{
+    		return jwtService.GenerateToken(user);
+    	}
+    	else
+    		return "fails";
+    }
+   
+   
 }

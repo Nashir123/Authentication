@@ -11,13 +11,18 @@ import com.tcs.hotelMgmt.service.UserService;
 @RestController
 public class UserController {
    @Autowired
-   UserService userSrevice;
+   UserService userService;
    
 	@PostMapping("/register")
 	public UserEntity saveUser(@RequestBody UserEntity user)
 	{
 		
-			return userSrevice.saveUser(user);
+			return userService.saveUser(user);
 		
+	}
+	@PostMapping("/login")
+	public String logIn(@RequestBody UserEntity user)
+	{
+		return userService.variefy(user);
 	}
 }
