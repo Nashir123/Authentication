@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
@@ -20,8 +21,13 @@ public class HotelMgmtService {
      @Autowired
      HotelMgmtRepo repo;
      
-    public List<HotelMgmtEntity> getAllRecord(){
-    	 return repo.findAll();
+    public List<HotelMgmtEntity> getAllRecord(int pageNo,int pageSize){
+    	
+    
+    	Pageable pageable =PageRequest.of(pageNo, pageSize);
+    	 Page<HotelMgmtEntity>page= this.repo.findAll(pageable);
+    	 System.out.println("data size = "+page.getContent().size());
+    	 return page.getContent();
      }
      
    public  HotelMgmtEntity getRecordById(int id)

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tcs.hotelMgmt.entity.HotelMgmtEntity;
@@ -23,9 +24,13 @@ public class HotelMgmtController {
      
 	@Autowired
 	HotelMgmtService service;
-	
+	//Pagination to pass RequestParam dynamically
 	@GetMapping("/getallrecord")
-	public List<HotelMgmtEntity> getAllData(HttpServletRequest http)
+	public List<HotelMgmtEntity> getAllData(HttpServletRequest http,
+			@RequestParam(value="pageNo" ,defaultValue="1",required=false) int pageNo,
+			@RequestParam(value="pageSize" ,defaultValue="3",required=false) int pageSize
+			)
+	
 	{
 	    HttpSession session = http.getSession(true); // false means: don't create if it doesn't exist
 	    if (session != null) {
@@ -34,7 +39,7 @@ public class HotelMgmtController {
 	        System.out.println("No session exists");
 	    }
 
-		return service.getAllRecord();
+		return service.getAllRecord(pageNo,pageSize);
 	}
 	
 	@GetMapping("/getById/{id}")
