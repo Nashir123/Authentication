@@ -3,8 +3,11 @@ package com.tcs.hotelMgmt.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tcs.hotelMgmt.entity.HotelMgmtEntity;
+import com.tcs.hotelMgmt.exception.HotelNotFound;
 import com.tcs.hotelMgmt.service.HotelMgmtService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,9 +47,16 @@ public class HotelMgmtController {
 	}
 	
 	@GetMapping("/getById/{id}")
-	public HotelMgmtEntity getRecordById(@PathVariable int id)
+	public HotelMgmtEntity getRecordById(@PathVariable int id) throws HotelNotFound
 	{
-		return service.getRecordById(id);
+		
+//		return service.getRecordById(id)  orElse throw newHotelNotFound("");
+		
+		HotelMgmtEntity h = service.getRecordById(id)
+			    .orElseThrow(() -> new HotelNotFound("Hotel not found with id: " + id));
+		
+		return h;
+		
 	}
 	
 	@PostMapping("/saveRecord")
@@ -74,5 +85,10 @@ public class HotelMgmtController {
 		
 		return (CsrfToken) http.getAttribute("_csrf");
 	}
+	@ExceptionHandler(HotelNotFound.class)
+	 public ResponseEntity<String>  hotelNotFound(HotelNotFound e)
+	 {
+		return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+	 }
 	
 }

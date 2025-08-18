@@ -30,10 +30,10 @@ public class HotelMgmtService {
     	 return page.getContent();
      }
      
-   public  HotelMgmtEntity getRecordById(int id)
-     {
-    	 return repo.findById(id).get();
-     }
+    public Optional<HotelMgmtEntity> getRecordById(int id) {
+        return repo.findById(id); // already returns Optional<HotelMgmtEntity>
+    }
+
     
   public   void saveRecord( HotelMgmtEntity entity)
      {
